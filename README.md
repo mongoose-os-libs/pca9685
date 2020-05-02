@@ -14,4 +14,25 @@ All outputs are set to the same PWM frequency.
 
 ## Example application
 
-TODO(pim)
+```
+#include "mgos.h"
+#include "mgos_pca9685.h"
+
+enum mgos_app_init_result mgos_app_init(void) {
+  struct mgos_pca9685 *s_pwm;
+  uint16_t freq;
+
+  if (!(s_pwm = mgos_pca9685_create(NULL))) {
+    LOG(LL_ERROR, ("Could not create PCA9685"));
+    return false;
+  }
+  for (int i=0; i<4; i++)
+    mgos_pca9685_chan_write(s_pwm, i, 1024*i, 1024*(i+1)-1);
+  mgos_pca9685_chan_write(s_pwm, 4, 3072, 1023);
+  mgos_pca9685_chan_write(s_pwm, 5, 4090, 10);
+  mgos_pca9685_chan_write(s_pwm, 6, 0, 1);
+  mgos_pca9685_chan_set(s_pwm, 7, true);
+
+  return MGOS_APP_INIT_SUCCESS;
+}
+```

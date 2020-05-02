@@ -40,6 +40,56 @@ struct mgos_pca9685 *mgos_pca9685_create(const struct mgos_pca9685_config *cfg);
 // Set the given config structure to reasonable defaults.
 void mgos_pca9685_default_cfg(struct mgos_pca9685_config *cfg);
 
+// Write or read PWM on/off positions to/from the given channel.
+// chan is a number from [0..16>
+// on is the position in the [0..4096> cycle to turn the output ON
+// off is the position in the [0..4096> cycle to turn the output OFF
+//
+// The helper function chan_set() will set the channel completely
+// on/off (ie. 100% duty cycle).
+//
+// NOTE: chan_get() will return an error if the channel
+// is in PWM mode (ie not fully on or off).
+//
+// Returns true on success or false if an error occured.
+bool mgos_pca9685_chan_write(struct mgos_pca9685 *dev, uint8_t chan, uint16_t on, uint16_t off);
+bool mgos_pca9685_chan_read(struct mgos_pca9685 *dev, uint8_t chan, uint16_t *on, uint16_t *off);
+bool mgos_pca9685_chan_set(struct mgos_pca9685 *dev, uint8_t chan, bool state);
+bool mgos_pca9685_chan_get(struct mgos_pca9685 *dev, uint8_t chan, bool *state);
+
+// --- Low level API
+// Get or set inversion for all channels.
+// Setting 'invert' to true inverts the logic state on all output channels.
+// Returns true on success or false if an error occured.
+bool mgos_pca9685_mode_set_invert(struct mgos_pca9685 *dev, bool invert);
+bool mgos_pca9685_mode_get_invert(struct mgos_pca9685 *dev, bool *invert);
+
+// Get or set output drive mode for all channels.
+// Setting 'totem' to true configures the output drivers with a totem pole
+// structure, and false configures them as open-drain outputs.
+// Returns true on success or false if an error occured.
+bool mgos_pca9685_mode_set_output_drive(struct mgos_pca9685 *dev, bool totem);
+bool mgos_pca9685_mode_get_output_drive(struct mgos_pca9685 *dev, bool *totem);
+
+// Get or set PWM output change event.
+// Setting 'och' to true changes outputs on the I2C STOP bit, and setting
+// to false changes the outputs upon I2C ACK.
+// Returns true on success or false if an error occured.
+bool mgos_pca9685_mode_set_och(struct mgos_pca9685 *dev, bool och);
+bool mgos_pca9685_mode_get_och(struct mgos_pca9685 *dev, bool *och);
+
+// Reset the chip to power-on state.
+// Returns true on success or false if an error occured.
+bool mgos_pca9685_reset(struct mgos_pca9685 *dev);
+
+// Get or set the PWM frequency (in Hertz)
+// The input 'freq' has to be between [24,1526] Hertz inclusive and will
+// clamp to the next available bracket (there are 253 possible values). See
+// the datasheet or the code for an explanation.
+// Returns true on success or false if an error occured.
+bool mgos_pca9685_pwm_frequency_set(struct mgos_pca9685 *dev, uint16_t freq);
+bool mgos_pca9685_pwm_frequency_get(struct mgos_pca9685 *dev, uint16_t *freq);
+
 // Clean up the driver and return memory used for it.
 bool mgos_pca9685_destroy(struct mgos_pca9685 **dev);
 

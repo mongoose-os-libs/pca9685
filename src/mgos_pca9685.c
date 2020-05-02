@@ -166,7 +166,7 @@ bool mgos_pca9685_pwm_frequency_get(struct mgos_pca9685 *dev, uint16_t *freq) {
   if (!dev || !freq) return false;
   val = mgos_i2c_read_reg_b(dev->config.i2c, dev->config.i2c_addr, MGOS_PCA9685_REG_PRE_SCALE);
   if (val < 0 || val > 255) return false;
-  *freq = (uint16_t)(dev->osc_freq / (val * 4096.0));
+  *freq = (uint16_t)(dev->osc_freq / ((val + 1) * 4096.0));
   return true;
 }
 
